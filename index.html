@@ -1,0 +1,1107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Magical Birthday Surprise</title>
+    <!-- Premium Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@300;400;600;800&family=Playfair+Display:ital,wght@0,600;1,400&display=swap" rel="stylesheet">
+    <!-- Confetti Script -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        :root {
+            --bg-color: #0f0a14; /* Deep Royal Velvet */
+            --card-bg: rgba(26, 18, 36, 0.9);
+            --gold-primary: #d4af37; /* Burnished Gold */
+            --gold-light: #f3e5ab;
+            --rose-accent: #e07a5f;
+            --text-color: #f4f1de;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            /* 🌟 STREAMING_CHUNK: Fixing scroll limits for smaller devices... */
+            overflow-x: hidden;
+            overflow-y: auto; /* Allows vertical scrolling when content overflows */
+            padding: 30px 10px; /* Guard padding for mobile views */
+            font-family: 'Montserrat', sans-serif;
+            position: relative;
+            /* Starry night subtle glow */
+            background-image: 
+                radial-gradient(circle at 20% 30%, rgba(212, 175, 55, 0.05) 0%, transparent 40%),
+                radial-gradient(circle at 80% 70%, rgba(224, 122, 95, 0.05) 0%, transparent 40%);
+        }
+
+        /* Ambient background twinkles */
+        .stars {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            background: radial-gradient(white, rgba(255,255,255,.2) 2px, transparent 40px);
+            background-size: 200px 200px;
+            opacity: 0.15;
+            z-index: 1;
+        }
+
+        .screen {
+            display: none;
+            width: 100%;
+            max-width: 580px;
+            padding: 24px;
+            text-align: center;
+            animation: fadeIn 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            z-index: 2;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.96) translateY(20px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        /* ========================================== */
+        /* SCREEN 1: GLOSSY GOLDEN PASSCODE           */
+        /* ========================================== */
+        .lock-container {
+            background: var(--card-bg);
+            padding: 40px 30px;
+            border-radius: 24px;
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(15px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+
+        .polaroid {
+            background: white;
+            padding: 12px 12px 24px 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+            transform: rotate(-3deg);
+            margin-bottom: 30px;
+            max-width: 210px;
+            transition: all 0.5s ease;
+            border: 1px solid rgba(255,255,255,0.8);
+        }
+
+        .polaroid:hover {
+            transform: rotate(0deg) scale(1.05);
+            box-shadow: 0 15px 35px rgba(212,175,55,0.3);
+        }
+
+        .polaroid img {
+            width: 100%;
+            height: auto;
+            border-radius: 2px;
+            filter: sepia(10%);
+        }
+
+        .polaroid-caption {
+            margin-top: 12px;
+            font-family: 'Great Vibes', cursive;
+            font-weight: bold;
+            font-size: 1.4rem;
+            color: #332211;
+        }
+
+        .passcode-display {
+            font-size: 2.2rem;
+            letter-spacing: 8px;
+            margin-bottom: 25px;
+            height: 45px;
+            font-weight: 800;
+            color: var(--gold-primary);
+            text-shadow: 0 0 15px rgba(212, 175, 55, 0.4);
+        }
+
+        .keypad {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            max-width: 240px;
+        }
+
+        .key {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            font-size: 1.3rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .key:hover {
+            background: rgba(212, 175, 55, 0.15);
+            border-color: var(--gold-primary);
+            transform: scale(1.05);
+        }
+
+        .key:active {
+            background: var(--gold-primary);
+            color: black;
+            box-shadow: 0 0 15px var(--gold-primary);
+        }
+
+        /* Passcode Shake on Wrong Input */
+        .shake {
+            animation: shake 0.4s ease;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-10px); }
+            40%, 80% { transform: translateX(10px); }
+        }
+
+        /* ========================================== */
+        /* SCREEN 2: COZY SURPRISE LOADER             */
+        /* ========================================== */
+        .loader-ring {
+            width: 80px;
+            height: 80px;
+            border: 3px solid rgba(212, 175, 55, 0.1);
+            border-radius: 50%;
+            border-top: 3px solid var(--gold-primary);
+            animation: spin 1s cubic-bezier(0.55, 0.055, 0.675, 0.19) infinite;
+            margin: 30px auto;
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.2);
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* ========================================== */
+        /* SCREEN 3: ROYAL LETTER BOX / ENVELOPE      */
+        /* ========================================== */
+        .envelope-container {
+            position: relative;
+            width: 250px;
+            height: 180px;
+            margin: 40px auto;
+            perspective: 800px;
+            cursor: pointer;
+        }
+
+        .envelope {
+            width: 100%;
+            height: 100%;
+            background: #1e1329;
+            border: 2px solid var(--gold-primary);
+            border-radius: 8px;
+            position: relative;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+            transform-style: preserve-3d;
+            transition: transform 0.6s;
+        }
+
+        .envelope:hover {
+            transform: scale(1.03) rotateY(5deg);
+        }
+
+        .envelope-flap {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 50%;
+            background: #271936;
+            border-bottom: 2px solid var(--gold-primary);
+            border-radius: 8px 8px 0 0;
+            transform-origin: top;
+            transition: transform 0.4s ease;
+            z-index: 3;
+        }
+
+        .envelope-seal {
+            position: absolute;
+            top: 35%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 50px;
+            height: 50px;
+            background: #ba1a1a; /* Elegant Wax Red Seal */
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.3rem;
+            color: #ffd700;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            z-index: 4;
+            transition: all 0.3s;
+        }
+
+        .envelope:hover .envelope-seal {
+            transform: translate(-50%, -50%) scale(1.1);
+            box-shadow: 0 0 15px #ba1a1a;
+        }
+
+        /* ========================================== */
+        /* SCREEN 4: ROYAL BIRTHDAY LETTER CARD       */
+        /* ========================================== */
+        .letter-card {
+            background: var(--card-bg);
+            padding: 35px;
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.08);
+            box-shadow: 0 20px 45px rgba(0,0,0,0.5);
+            text-align: left;
+            line-height: 1.7;
+        }
+
+        .letter-card h2 {
+            font-family: 'Playfair Display', serif;
+            text-align: center;
+            color: var(--gold-primary);
+            margin-bottom: 25px;
+            font-size: 2rem;
+            letter-spacing: 2px;
+        }
+
+        .letter-card p {
+            font-size: 0.95rem;
+            font-weight: 300;
+            color: #e5e5e5;
+            margin-bottom: 15px;
+        }
+
+        .photo-gallery {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin: 30px 0;
+        }
+
+        .gallery-img {
+            width: 100%;
+            height: 280px;
+            object-fit: cover;
+            border-radius: 12px;
+            border: 2px solid rgba(212, 175, 55, 0.4);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            transition: all 0.4s ease;
+        }
+
+        .gallery-img:hover {
+            transform: scale(1.05) rotate(2deg);
+            border-color: var(--gold-primary);
+        }
+
+        .next-btn {
+            display: block;
+            width: 100%;
+            background: linear-gradient(135deg, var(--gold-primary), #b8911c);
+            color: black;
+            border: none;
+            padding: 15px;
+            font-size: 1rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.3);
+        }
+
+        .next-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(212, 175, 55, 0.5);
+        }
+
+        /* ========================================== */
+        /* SCREEN 5: REALISTIC 3D CYLINDER CAKE        */
+        /* ========================================== */
+        .wish-header {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.6rem;
+            color: var(--gold-light);
+            margin-bottom: 40px;
+            letter-spacing: 1.5px;
+            animation: pulse-glow 2s infinite alternate;
+        }
+
+        @keyframes pulse-glow {
+            0% { text-shadow: 0 0 10px rgba(243, 229, 171, 0.3); }
+            100% { text-shadow: 0 0 25px rgba(243, 229, 171, 0.8); }
+        }
+
+        /* 🎂 3D Isometric Cake Stage */
+        .cake-stage {
+            width: 100%;
+            height: 380px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .cake-assembly {
+            position: relative;
+            width: 260px;
+            height: 260px;
+            animation: cake-hover 5s infinite ease-in-out;
+        }
+
+        @keyframes cake-hover {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-12px); }
+        }
+
+        /* 3D Cylinder Layer Construction */
+        .layer-3d {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0; /* Starts hidden for drop bounce */
+        }
+
+        /* Top Ellipse Face */
+        .ellipse-top {
+            width: 100%;
+            border-radius: 50%;
+            position: absolute;
+            top: 0;
+            box-shadow: inset 0 2px 5px rgba(255,255,255,0.2);
+        }
+
+        /* Curved Side Depth */
+        .cylinder-depth {
+            width: 100%;
+            position: absolute;
+            box-shadow: inset 0 -10px 20px rgba(0,0,0,0.4);
+        }
+
+        /* 1. Golden Plate */
+        .plate-3d {
+            width: 280px;
+            height: 80px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #ffe28a 10%, #ab8013 70%, #573e04 100%);
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.6), inset 0 0 12px rgba(255,255,255,0.4);
+            border-bottom: 4px solid #735303;
+            opacity: 0;
+            z-index: 1;
+        }
+
+        /* 2. Cake Bottom Layer (Chocolate Base) */
+        .cake-bottom-3d {
+            width: 220px;
+            height: 70px;
+            bottom: 55px;
+            z-index: 2;
+        }
+
+        .cake-bottom-3d .ellipse-top {
+            height: 48px;
+            background: #5d3521; /* Rich Dark Brown */
+            z-index: 4;
+        }
+
+        .cake-bottom-3d .cylinder-depth {
+            height: 40px;
+            top: 24px; /* Half of top ellipse height to align center */
+            background: linear-gradient(to right, #331a0f, #5d3521 50%, #331a0f);
+            border-radius: 0 0 110px 110px / 0 0 24px 24px; /* Match ellipse curve */
+            z-index: 3;
+        }
+
+        /* 3. Cake Middle Layer (Strawberry Pink) */
+        .cake-middle-3d {
+            width: 180px;
+            height: 60px;
+            bottom: 92px;
+            z-index: 5;
+        }
+
+        .cake-middle-3d .ellipse-top {
+            height: 40px;
+            background: #f7cad0; /* Soft Pink strawberry */
+            z-index: 7;
+        }
+
+        .cake-middle-3d .cylinder-depth {
+            height: 35px;
+            top: 20px;
+            background: linear-gradient(to right, #d05a72, #f7cad0 50%, #d05a72);
+            border-radius: 0 0 90px 90px / 0 0 20px 20px;
+            z-index: 6;
+        }
+
+        /* 4. Cake Top Frosting Layer (White Drips) */
+        .cake-top-3d {
+            width: 140px;
+            height: 55px;
+            bottom: 125px;
+            z-index: 8;
+        }
+
+        .cake-top-3d .ellipse-top {
+            height: 32px;
+            background: #ffffff; /* Glossy Vanilla */
+            z-index: 10;
+        }
+
+        .cake-top-3d .cylinder-depth {
+            height: 30px;
+            top: 16px;
+            background: linear-gradient(to right, #e2e8f0, #ffffff 50%, #e2e8f0);
+            border-radius: 0 0 70px 70px / 0 0 16px 16px;
+            z-index: 9;
+        }
+
+        /* Dynamic Cream Drips hanging from top frosting layer */
+        .drip-group {
+            position: absolute;
+            top: 24px;
+            width: 100%;
+            height: 20px;
+            z-index: 11;
+        }
+
+        .drip {
+            position: absolute;
+            background: #ffffff;
+            width: 10px;
+            border-radius: 0 0 5px 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .drip.d1 { left: 15px; height: 16px; }
+        .drip.d2 { left: 45px; height: 22px; }
+        .drip.d3 { left: 75px; height: 18px; }
+        .drip.d4 { left: 100px; height: 24px; }
+        .drip.d5 { left: 120px; height: 14px; }
+
+        /* 🕯️ 3D Candles sequence with Isometric Wrappers */
+        .candles-group {
+            position: absolute;
+            width: 100%;
+            bottom: 160px; /* Perfectly aligned on top of the white cream surface */
+            z-index: 99; /* Absolute top rendering above all cake layers */
+            pointer-events: none;
+        }
+
+        .candle-wrapper {
+            position: absolute;
+            width: 8px;
+            height: 38px;
+            pointer-events: none;
+        }
+
+        /* Isometric positioning on the top ellipse surface */
+        .candle-wrapper.cw1 { left: 85px; bottom: 4px; }   /* Front-left position */
+        .candle-wrapper.cw2 { left: 126px; bottom: 12px; } /* Back-center (shifted higher up on the circular plane) */
+        .candle-wrapper.cw3 { left: 167px; bottom: 4px; }   /* Front-right position */
+
+        .candle-3d {
+            position: absolute;
+            width: 8px;
+            height: 38px;
+            background: linear-gradient(to right, #7bdff2, #b2ebf2 50%, #00acc1);
+            border-radius: 2px;
+            opacity: 0; /* Animated drops */
+            box-shadow: 0 3px 6px rgba(0,0,0,0.3);
+        }
+
+        /* Real 3D Flickering Flame */
+        .flame-3d {
+            position: absolute;
+            top: -14px;
+            left: -2px;
+            width: 12px;
+            height: 16px;
+            background: radial-gradient(circle, #ffea00 20%, #ff5722 80%);
+            border-radius: 50% 50% 20% 20% / 60% 60% 40% 40%;
+            box-shadow: 0 -4px 15px #ff5722, 0 0 30px rgba(255, 153, 0, 0.8);
+            animation: flame-flicker 0.12s ease-in-out infinite alternate;
+            transform-origin: bottom center;
+        }
+
+        @keyframes flame-flicker {
+            0% { transform: scale(1) rotate(-1deg) skewX(-2deg); opacity: 0.9; }
+            100% { transform: scale(1.15) rotate(2deg) skewX(2deg); opacity: 1; }
+        }
+
+        /* Smoke Trails when candle is blown out */
+        .smoke {
+            position: absolute;
+            top: -20px;
+            left: 1px;
+            width: 6px;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.4);
+            border-radius: 50%;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .smoke-active {
+            animation: smoke-rise 2s ease-out forwards;
+        }
+
+        @keyframes smoke-rise {
+            0% { transform: translateY(0) scale(1); opacity: 0.7; filter: blur(1px); }
+            50% { transform: translateY(-35px) translateX(-8px) scale(2.5); opacity: 0.3; filter: blur(3px); }
+            100% { transform: translateY(-65px) translateX(-15px) scale(4); opacity: 0; filter: blur(5px); }
+        }
+
+        /* Mic Sensitivity Indicator */
+        .mic-bar-container {
+            width: 140px;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            margin: 20px auto;
+            overflow: hidden;
+            display: flex;
+        }
+
+        .mic-bar {
+            width: 0%;
+            height: 100%;
+            background: var(--gold-primary);
+            transition: width 0.1s ease;
+            box-shadow: 0 0 10px var(--gold-primary);
+        }
+
+        /* Banner after Candle blowout */
+        .hbd-banner {
+            font-family: 'Great Vibes', cursive;
+            font-size: 2.8rem;
+            color: var(--gold-primary);
+            margin-top: 30px;
+            opacity: 0;
+            transform: scale(0.9);
+            transition: all 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            text-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+        }
+
+        .hbd-banner.reveal {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        /* 🎈 FLOATING 3D BALLOONS */
+        .balloon-stage {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 10;
+            display: none;
+        }
+
+        .balloon-3d {
+            position: absolute;
+            bottom: -150px;
+            width: 75px;
+            height: 90px;
+            border-radius: 50% 50% 50% 50% / 40% 40% 60% 60%;
+            animation: floatUp 8s cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite;
+            box-shadow: inset -8px -8px 20px rgba(0,0,0,0.3), 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        /* Premium translucent balloon colors */
+        .balloon-3d.b-gold { background: radial-gradient(circle at 30% 30%, #fff6d1 0%, #d4af37 60%, #806105 100%); }
+        .balloon-3d.b-rose { background: radial-gradient(circle at 30% 30%, #ffe9e3 0%, #e07a5f 60%, #8f3821 100%); }
+        .balloon-3d.b-purple { background: radial-gradient(circle at 30% 30%, #e8d7ff 0%, #8b5cf6 60%, #4c1d95 100%); }
+
+        .balloon-3d::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-left: 6px solid transparent;
+            border-right: 6px solid transparent;
+            border-bottom: 8px solid rgba(255,255,255,0.4);
+        }
+
+        .balloon-string {
+            position: absolute;
+            width: 2px;
+            height: 100px;
+            background: rgba(255, 255, 255, 0.25);
+            bottom: -108px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(-115vh) rotate(15deg); opacity: 0; }
+        }
+
+        /* 🎥 Premium Spring-Bounce Assembly Animations (Video Inspired!) */
+        @keyframes drop-bounce-plate {
+            0% { transform: translateX(-50%) translateY(-300px) scaleY(1.3); opacity: 0; }
+            60% { transform: translateX(-50%) translateY(5px) scaleY(0.9); opacity: 1; }
+            80% { transform: translateX(-50%) translateY(-3px) scaleY(1.05); }
+            100% { transform: translateX(-50%) translateY(0) scaleY(1); opacity: 1; }
+        }
+
+        @keyframes drop-bounce-layer {
+            0% { transform: translateX(-50%) translateY(-300px) scaleY(1.3); opacity: 0; }
+            60% { transform: translateX(-50%) translateY(12px) scaleY(0.85); opacity: 1; }
+            80% { transform: translateX(-50%) translateY(-5px) scaleY(1.05); }
+            100% { transform: translateX(-50%) translateY(0) scaleY(1); opacity: 1; }
+        }
+
+        @keyframes drop-bounce-candle {
+            0% { transform: translateY(-200px); opacity: 0; }
+            60% { transform: translateY(6px); opacity: 1; }
+            80% { transform: translateY(-2px); }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Twinkling stars in the background -->
+    <div class="stars"></div>
+
+    <!-- Background Music -->
+    <audio id="bgMusic" src="happy_Birthday_song_A_Aa_2_Bgm_Ringtone___Trending_Ringtone_Download_Link___Caller_Tune___MeloGrove(48k).mp3" loop></audio>
+
+    <!-- 🎈 Floating Balloon Overlay -->
+    <div id="balloonArea" class="balloon-stage"></div>
+
+    <!-- ========================================== -->
+    <!-- SCREEN 1: PASSCODE LOCK                    -->
+    <!-- ========================================== */ -->
+    <div id="screenLock" class="screen active">
+        <div class="lock-container" id="lockContainer">
+            <div class="polaroid">
+                <!-- Fallback premium illustration image if client source is missing -->
+                <img src="magical-birthday-wish-stockcake.jpg" onerror="this.src='https://images.unsplash.com/photo-1530103862676-de8c9debad1d?w=400&q=80'" alt="Sharvari Birthday">
+                <div class="polaroid-caption">Happy Birthday Sharvari 🥳🎉</div>
+            </div>
+            <div style="margin-bottom: 12px; font-weight: 600; letter-spacing: 1px; font-size: 0.85rem; color: var(--gold-primary);">ENTER SECURE ACCESS CODE:</div>
+            <div class="passcode-display" id="passcodeDisplay">________</div>
+            <div class="keypad">
+                <button class="key" onclick="pressKey('1')">1</button>
+                <button class="key" onclick="pressKey('2')">2</button>
+                <button class="key" onclick="pressKey('3')">3</button>
+                <button class="key" onclick="pressKey('4')">4</button>
+                <button class="key" onclick="pressKey('5')">5</button>
+                <button class="key" onclick="pressKey('6')">6</button>
+                <button class="key" onclick="pressKey('7')">7</button>
+                <button class="key" onclick="pressKey('8')">8</button>
+                <button class="key" onclick="pressKey('9')">9</button>
+                <button class="key" onclick="pressKey('0')">0</button>
+                <button class="key" style="background:rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.1);" onclick="clearPasscode()">⌫</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- SCREEN 2: SURPRISE LOADING PAGE            -->
+    <!-- ========================================== */ -->
+    <div id="screenLoading" class="screen">
+        <h2 style="font-family: 'Playfair Display', serif; color: var(--gold-light); font-size: 1.8rem; letter-spacing: 1.5px;">Sharvari, wait a second...</h2>
+        <div class="loader-ring"></div>
+        <p style="color: #bc9fca; letter-spacing: 1px;">Assembling your special digital birthday space...</p>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- SCREEN 3: WAX SEAL ENVELOPE                 -->
+    <!-- ========================================== */ -->
+    <div id="screenEnvelope" class="screen">
+        <h2 style="font-family: 'Playfair Display', serif; color: var(--gold-light); font-size: 1.6rem; margin-bottom: 20px;">For You Only ✉️</h2>
+        <div class="envelope-container" onclick="openEnvelope()">
+            <div class="envelope" id="envelopeObj">
+                <div class="envelope-flap" id="envelopeFlap"></div>
+                <div class="envelope-seal">♥</div>
+            </div>
+        </div>
+        <p style="color: #9c8a9c; margin-top: 25px; letter-spacing: 1px; font-size: 0.9rem;">You have a sealed letter. Click the seal to open!</p>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- SCREEN 4: ROYAL BIRTHDAY LETTER CARD       -->
+    <!-- ========================================== */ -->
+    <div id="screenLetter" class="screen">
+        <div class="letter-card">
+            <h2>Happy Birthday Sharvari! 🎉</h2>
+
+            <p>I wanted to create something completely unique just for you. Hope you have an amazing day."</p> 
+
+            <p> Wishing you the absolute best year ahead filled with success. Happy Birthday Sharvari 🥳🎉. </p>
+            
+            <div class="photo-gallery">
+                <img class="gallery-img" src="Snapchat-911711236.jpg" alt="Joyful Moments">
+                <img class="gallery-img" src="Snapchat-1047236586.jpg" alt="Beautiful Celebration">
+                <img class="gallery-img" src="Snapchat-1759475280.jpg" alt="Beautiful Celebration">
+                <img class="gallery-img" src="WhatsApp Image 2026-07-04 at 7.29.33 PM.jpeg" alt="Joyful Moments">
+            </div>
+            
+            
+            
+            <button class="next-btn" onclick="goToCake()">Make a Wish ✨</button>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- SCREEN 5: CSS 3D REAL BLOWING CAKE STAGE    -->
+    <!-- ========================================== */ -->
+    <div id="screenCake" class="screen">
+        <p class="wish-header">✨ Make a wish, Sharvari! ✨</p>
+        
+        <!-- Interactive 3D Cake Stage -->
+        <div class="cake-stage" onclick="blowCandles()">
+            <div class="cake-assembly" id="cake3D">
+                <!-- Golden Base Plate -->
+                <div class="plate-3d" id="p3d"></div>
+                
+                <!-- 3D Bottom Layer (Chocolate) -->
+                <div class="layer-3d cake-bottom-3d" id="layerBottom">
+                    <div class="ellipse-top"></div>
+                    <div class="cylinder-depth"></div>
+                </div>
+
+                <!-- 3D Middle Layer (Strawberry Pink) -->
+                <div class="layer-3d cake-middle-3d" id="layerMiddle">
+                    <div class="ellipse-top"></div>
+                    <div class="cylinder-depth"></div>
+                </div>
+
+                <!-- 3D Top Frosting Layer (White Drips) -->
+                <div class="layer-3d cake-top-3d" id="layerTopCream">
+                    <div class="ellipse-top"></div>
+                    <div class="cylinder-depth"></div>
+                    <!-- Hanging Frosting Drips -->
+                    <div class="drip-group">
+                        <div class="drip d1"></div>
+                        <div class="drip d2"></div>
+                        <div class="drip d3"></div>
+                        <div class="drip d4"></div>
+                        <div class="drip d5"></div>
+                    </div>
+                </div>
+
+                <!-- Three 3D candles sitting in circle on top face with isometric wrappers -->
+                <div class="candles-group" id="candlesGroup">
+                    <div class="candle-wrapper cw1">
+                        <div class="candle-3d c1" id="candle1">
+                            <div class="flame-3d"></div>
+                            <div class="smoke"></div>
+                        </div>
+                    </div>
+                    <div class="candle-wrapper cw2">
+                        <div class="candle-3d c2" id="candle2">
+                            <div class="flame-3d"></div>
+                            <div class="smoke"></div>
+                        </div>
+                    </div>
+                    <div class="candle-wrapper cw3">
+                        <div class="candle-3d c3" id="candle3">
+                            <div class="flame-3d"></div>
+                            <div class="smoke"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <p style="font-size: 0.85rem; color: #a291a8; letter-spacing: 0.5px;">
+            🎤 Try <b>blowing gently</b> into your microphone/screen, or <b>tap the cake</b> to blow out the candles!
+        </p>
+        
+        <!-- Microphone Volume Level visualization -->
+        <div class="mic-bar-container">
+            <div class="mic-bar" id="micLevel"></div>
+        </div>
+
+        <div class="hbd-banner" id="hbdBanner">Happy Birthday, Sharvari! 🥳🎂🎉</div>
+    </div>
+
+    <script>
+        // Custom secure birth date passcode (July 15, 2007)
+        const CORRECT_PASSCODE = "15072007"; 
+        let currentInput = "";
+        let audioContext, analyser, microphone, javascriptNode;
+
+        // Keypad actions
+        function pressKey(num) {
+            if (currentInput.length < 8) {
+                currentInput += num;
+                updateDisplay();
+            }
+            if (currentInput.length === 8) {
+                setTimeout(checkPasscode, 350);
+            }
+        }
+
+        function clearPasscode() {
+            currentInput = currentInput.slice(0, -1);
+            updateDisplay();
+        }
+
+        function updateDisplay() {
+            let displayStr = currentInput;
+            while (displayStr.length < 8) {
+                displayStr += "_";
+            }
+            document.getElementById('passcodeDisplay').textContent = displayStr;
+        }
+
+        function checkPasscode() {
+            if (currentInput === CORRECT_PASSCODE) {
+                switchScreen('screenLock', 'screenLoading');
+                
+                // Play Happy Birthday BGM safely
+                let bgMusic = document.getElementById('bgMusic');
+                bgMusic.play().catch(e => console.log("Audio waiting for full interaction: ", e));
+
+                // Switch to envelope screen after elegant delay
+                setTimeout(() => {
+                    switchScreen('screenLoading', 'screenEnvelope');
+                }, 2800);
+            } else {
+                // Wrong password - beautiful shake animation
+                let card = document.getElementById('lockContainer');
+                card.classList.add('shake');
+                document.getElementById('passcodeDisplay').style.color = "#ba1a1a";
+                
+                setTimeout(() => {
+                    card.classList.remove('shake');
+                    document.getElementById('passcodeDisplay').style.color = "var(--gold-primary)";
+                    currentInput = "";
+                    updateDisplay();
+                }, 500);
+            }
+        }
+
+        // Screen 3 Envelope logic
+        function openEnvelope() {
+            let flap = document.getElementById('envelopeFlap');
+            let env = document.getElementById('envelopeObj');
+            
+            flap.style.transform = "rotateX(180deg)";
+            setTimeout(() => {
+                env.style.transform = "translateY(150px) scale(0.7)";
+                env.style.opacity = "0";
+                setTimeout(() => {
+                    switchScreen('screenEnvelope', 'screenLetter');
+                }, 400);
+            }, 600);
+        }
+
+        // Screen 4 Letter logic -> Transitions and triggers the 3D Cake Assembly
+        function goToCake() {
+            switchScreen('screenLetter', 'screenCake');
+            document.body.style.background = "#050308"; // Dim lights down
+            
+            // Trigger 3D CSS Layer assembly sequential drops with physics-like times!
+            setTimeout(() => {
+                let plate = document.getElementById('p3d');
+                plate.style.opacity = "1";
+                plate.style.animation = "drop-bounce-plate 1.1s cubic-bezier(0.175, 0.885, 0.32, 1.2) forwards";
+            }, 100);
+
+            setTimeout(() => {
+                let bottom = document.getElementById('layerBottom');
+                bottom.style.opacity = "1";
+                bottom.style.animation = "drop-bounce-layer 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.25) forwards";
+            }, 600);
+
+            setTimeout(() => {
+                let middle = document.getElementById('layerMiddle');
+                middle.style.opacity = "1";
+                middle.style.animation = "drop-bounce-layer 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.25) forwards";
+            }, 1100);
+
+            setTimeout(() => {
+                let topCream = document.getElementById('layerTopCream');
+                topCream.style.opacity = "1";
+                topCream.style.animation = "drop-bounce-layer 1.1s cubic-bezier(0.175, 0.885, 0.32, 1.2) forwards";
+            }, 1600);
+
+            setTimeout(() => {
+                // Drop all three 3D candles onto the top cream layer!
+                let c1 = document.getElementById('candle1');
+                let c2 = document.getElementById('candle2');
+                let c3 = document.getElementById('candle3');
+
+                c1.style.opacity = "1"; c1.style.animation = "drop-bounce-candle 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.27) forwards";
+                setTimeout(() => {
+                    c2.style.opacity = "1"; c2.style.animation = "drop-bounce-candle 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.27) forwards";
+                }, 200);
+                setTimeout(() => {
+                    c3.style.opacity = "1"; c3.style.animation = "drop-bounce-candle 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.27) forwards";
+                }, 400);
+
+                // Initialize real mic blowing listeners once cake is fully loaded
+                setTimeout(initializeMicrophoneDetection, 1000);
+            }, 2200);
+        }
+
+        // 💨 Blow candles OUT!
+        let candlesBlown = false;
+        function blowCandles() {
+            if (candlesBlown) return;
+            candlesBlown = true;
+
+            // Stop listening to mic
+            if (javascriptNode) {
+                javascriptNode.onaudioprocess = null;
+            }
+
+            // Exinguish flames one-by-one sequentially
+            const flames = document.querySelectorAll('.flame-3d');
+            const smokes = document.querySelectorAll('.smoke');
+
+            flames.forEach((flame, index) => {
+                setTimeout(() => {
+                    flame.style.display = 'none'; // Extinguish flame
+                    smokes[index].classList.add('smoke-active'); // Spark real 3D smoke
+                }, index * 250); // Sequential delays
+            });
+
+            // Reveal Grand Birthday Banner
+            setTimeout(() => {
+                document.getElementById('hbdBanner').classList.add('reveal');
+                
+                // Show floating birthday balloons
+                const balloonArea = document.getElementById('balloonArea');
+                balloonArea.style.display = 'block';
+                createBalloons();
+
+                // Spark Canvas Premium Confetti explosion
+                launchConfettiCelebration();
+            }, 800);
+        }
+
+        // Real-Time Microphone Breath/Blow Analyzer
+        function initializeMicrophoneDetection() {
+            navigator.mediaDevices.getUserMedia({ audio: true, video: false })
+            .then(function(stream) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                analyser = audioContext.createAnalyser();
+                microphone = audioContext.createMediaStreamSource(stream);
+                javascriptNode = audioContext.createScriptProcessor(2048, 1, 1);
+
+                analyser.smoothingTimeConstant = 0.3;
+                analyser.fftSize = 1024;
+
+                microphone.connect(analyser);
+                analyser.connect(javascriptNode);
+                javascriptNode.connect(audioContext.destination);
+
+                javascriptNode.onaudioprocess = function() {
+                    let array = new Uint8Array(analyser.frequencyBinCount);
+                    analyser.getByteFrequencyData(array);
+                    let values = 0;
+
+                    let length = array.length;
+                    for (let i = 0; i < length; i++) {
+                        values += (array[i]);
+                    }
+
+                    let average = values / length;
+                    
+                    // Show voice activity feedback bar
+                    let visualBar = document.getElementById('micLevel');
+                    if (visualBar) {
+                        visualBar.style.width = Math.min(average * 2, 100) + '%';
+                    }
+
+                    // Sensitivity Threshold (Higher volume for wind blower peaks)
+                    if (average > 55) {
+                        blowCandles();
+                    }
+                };
+            })
+            .catch(function(err) {
+                console.log("Mic detection bypassed or denied: ", err);
+            });
+        }
+
+        // 🎈 Generate floating 3D balloons dynamically
+        function createBalloons() {
+            const area = document.getElementById('balloonArea');
+            const balloonColors = ['b-gold', 'b-rose', 'b-purple'];
+            
+            for (let i = 0; i < 18; i++) {
+                let balloon = document.createElement('div');
+                let colorClass = balloonColors[Math.floor(Math.random() * balloonColors.length)];
+                
+                balloon.className = `balloon-3d ${colorClass}`;
+                balloon.style.left = Math.random() * 85 + 'vw';
+                balloon.style.animationDelay = Math.random() * 5 + 's';
+                
+                // Create elegant physical strings dangling down
+                let string = document.createElement('div');
+                string.className = 'balloon-string';
+                balloon.appendChild(string);
+                
+                area.appendChild(balloon);
+            }
+        }
+
+        // Launch grand canvas confetti shower
+        function launchConfettiCelebration() {
+            var duration = 5 * 1000;
+            var animationEnd = Date.now() + duration;
+            var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 100 };
+
+            function randomInRange(min, max) {
+              return Math.random() * (max - min) + min;
+            }
+
+            var interval = setInterval(function() {
+              var timeLeft = animationEnd - Date.now();
+
+              if (timeLeft <= 0) {
+                return clearInterval(interval);
+              }
+
+              var particleCount = 50 * (timeLeft / duration);
+              // Launch left & right sparkles
+              confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } });
+              confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } });
+            }, 250);
+        }
+
+        // Switch helper
+        function switchScreen(fromId, toId) {
+            document.getElementById(fromId).classList.remove('active');
+            document.getElementById(toId).classList.add('active');
+        }
+    </script>
+</body>
+</html>
